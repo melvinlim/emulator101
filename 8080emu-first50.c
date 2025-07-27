@@ -903,6 +903,20 @@ State8080* Init8080(void)
 	return state;
 }
 
+void DumpScreenMem(State8080* state)
+{
+	int offset = 0x2400;
+	uint8_t *buffer = &state->memory[offset];
+	int k = 0;
+	for(int i=0; i<0x4000; i += 0x20)
+	{
+		for(int j=0; j<0x20; j++)
+		{
+			printf("%02x", buffer[k++]);
+		}
+		printf("\n");
+	}
+}
 
 int main (int argc, char**argv)
 {
@@ -918,6 +932,7 @@ int main (int argc, char**argv)
 	while (done == 0)
 	{
 		done = Emulate8080Op(state);
+		//DumpScreenMem(state);
 	}
 	return 0;
 }
