@@ -4,7 +4,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#define dbgprint(...) printf(__VA_ARGS__)
+//#define dbgprint(...) printf(__VA_ARGS__)
+#define dbgprint(...) fprintf(stderr, __VA_ARGS__);
 
 typedef struct ConditionCodes {
 	uint8_t		z:1;
