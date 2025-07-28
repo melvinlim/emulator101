@@ -330,7 +330,7 @@ int Disassemble8080Op(unsigned char *codebuffer, int pc)
 	return opbytes;
 }
 
-void LogicFlagsA(State8080 *state)
+void LogicFlagsA(State8080* state)
 {
 	state->cc.cy = state->cc.ac = 0;
 	state->cc.z = (state->a == 0);
@@ -338,7 +338,7 @@ void LogicFlagsA(State8080 *state)
 	state->cc.p = parity(state->a, 8);
 }
 
-void ArithFlagsA(State8080 *state, uint16_t res)
+void ArithFlagsA(State8080* state, uint16_t res)
 {
 	state->cc.cy = (res > 0xff);
 	state->cc.z = ((res&0xff) == 0);
@@ -350,10 +350,29 @@ void UnimplementedInstruction(State8080* state)
 {
 	//pc will have advanced one, so undo that
 	dbgprint ("Error: Unimplemented instruction\n");
+	//return;
 	state->pc--;
 	Disassemble8080Op(state->memory, state->pc);
 	dbgprint("\n");
 	exit(1);
+}
+
+uint8_t MachineIN(State8080* state, uint8_t port)
+{
+	uint8_t a;
+	switch(port)
+	{
+		case 2:
+			a=0;
+			//UnimplementedInstruction(state);
+			break;
+		case 3:
+			UnimplementedInstruction(state);
+//			uint16_t v = (shift1<<8) | shift0;
+//			a = ((v >> (8-shift_offset)) & 0xff);
+			break;
+	}
+	return a;
 }
 
 int Emulate8080Op(State8080* state)
@@ -781,7 +800,11 @@ int Emulate8080Op(State8080* state)
 		case 0xd8: UnimplementedInstruction(state); break;
 		case 0xd9: UnimplementedInstruction(state); break;
 		case 0xda: UnimplementedInstruction(state); break;
-		case 0xdb: UnimplementedInstruction(state); break;
+		case 0xdb:
+							 uint8_t port = opcode[1];
+							 state->a = MachineIN(state, port);
+							 state->pc++;
+							 break;
 		case 0xdc: UnimplementedInstruction(state); break;
 		case 0xdd: UnimplementedInstruction(state); break;
 		case 0xde: UnimplementedInstruction(state); break;
