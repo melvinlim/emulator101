@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <time.h>
 
 //#define dbgprint(...) printf(__VA_ARGS__)
 #define dbgprint(...) fprintf(stderr, __VA_ARGS__);
@@ -918,10 +919,27 @@ void DumpScreenMem(State8080* state)
 	}
 }
 
+void Push(State8080* state, uint8_t lw, uint8_t hw)
+{
+	state->memory[state->sp-1] = lw;
+	state->memory[state->sp-2] = hw;
+	state->sp = state->sp - 2;
+}
+
+void GenerateInterrupt(State8080* state, int interrupt_num)
+{
+	Push(state, (state->pc & 0xFF00) >> 8, (state->pc & 0xff));
+
+	//Set the PC to the low memory vector.
+	//This is identical to an "RST interrupt_num" instruction.
+	state->pc = 8 * interrupt_num;
+}
+
 int main (int argc, char**argv)
 {
 	int done = 0;
 	int vblankcycles = 0;
+	int lastInterrupt = 0;
 	State8080* state = Init8080();
 	
 	ReadFileIntoMemoryAt(state, "invaders.h", 0);
@@ -933,6 +951,15 @@ int main (int argc, char**argv)
 	{
 		done = Emulate8080Op(state);
 		//DumpScreenMem(state);
+		if (time(0) - lastInterrupt > 1.0/60.0)  //1/60 second has elapsed
+		{
+			//only do an interrupt if they are enabled
+			if (state->int_enable)
+			{
+				GenerateInterrupt(state, 2);    //interrupt 2
+				lastInterrupt = time(0);
+			}
+		}
 	}
 	return 0;
 }
