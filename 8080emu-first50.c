@@ -755,7 +755,13 @@ int Emulate8080Op(State8080* state)
 			}
 			break;
 		case 0xc7: UnimplementedInstruction(state); break;
-		case 0xc8: UnimplementedInstruction(state); break;
+		case 0xc8:						//RZ
+			if(state->cc.z == 1)
+			{
+				state->pc = state->memory[state->sp] | (state->memory[state->sp+1] << 8);
+				state->sp += 2;
+			}
+			break;
 		case 0xc9: 						//RET
 			state->pc = state->memory[state->sp] | (state->memory[state->sp+1] << 8);
 			state->sp += 2;
