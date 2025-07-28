@@ -1442,20 +1442,25 @@ int main (int argc, char**argv)
 	
 	while (!done)
 	{
-		cycles = Emulate8080Op(state);
-		if (time(0) - lastInterrupt > 1.0/60.0)  //1/60 second has elapsed
+		cycles = 0;
+		while(cycles < (2000000 / 30))	//8080 ran at 2MHz.  2 million cycles per second.  video interrupts are every 1/30 of a second.
 		{
+			cycles += Emulate8080Op(state);
+		}
+
+		//usleep(1./2000000.*(float)cycles);
+//		if (time(0) - lastInterrupt > 1.0/60.0)  //1/60 second has elapsed
+//		{
 			//only do an interrupt if they are enabled
 			if (state->int_enable)
 			{
 				GenerateInterrupt(state, nextInterrupt);
 				if(nextInterrupt = 2)	nextInterrupt = 1;
 				else nextInterrupt = 2;
-				lastInterrupt = time(0);
+				//lastInterrupt = time(0);
 				DumpScreenMem(state);
 			}
-		}
-		usleep(1./2000000.*(float)cycles);
+//		}
 	}
 	return 0;
 }
