@@ -805,8 +805,12 @@ int Emulate8080Op(State8080* state)
 		case 0xd7: UnimplementedInstruction(state); break;
 		case 0xd8: UnimplementedInstruction(state); break;
 		case 0xd9: UnimplementedInstruction(state); break;
-		case 0xda: UnimplementedInstruction(state); break;
-		case 0xdb:
+		case 0xda:					//JC
+							 if(state->cc.cy == 1)
+							 {
+								 state->pc = (opcode[2] << 8) | opcode[1];
+							 }
+		case 0xdb:					//IN port
 							 uint8_t port = opcode[1];
 							 state->a = MachineIN(state, port);
 							 state->pc++;
