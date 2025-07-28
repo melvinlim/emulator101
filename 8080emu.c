@@ -1415,7 +1415,8 @@ void DumpScreenMem(State8080* state)
 	int offset = 0x2400;
 	uint8_t *buffer = &state->memory[offset];
 	int k = 0;
-	system("clear");
+	//system("clear");
+	move(0,0);
 	for(int i=0; i<0x4000; i += 0x20)
 	{
 		for(int j=0; j<0x20; j++)
@@ -1425,9 +1426,9 @@ void DumpScreenMem(State8080* state)
 			{
 				uint8_t tmpval = buffer[k] & (0x80 >> l);
 				if(tmpval > 0){
-					printf(".");
+					printw(".");
 				}else{
-					printf(" ");
+					printw(" ");
 				}
 			}
 			k++;
@@ -1441,8 +1442,9 @@ void DumpScreenMem(State8080* state)
 			}
 			*/
 		}
-		printf("\n");
+		printw("\n");
 	}
+	refresh();
 }
 
 int currentTime()
@@ -1454,6 +1456,11 @@ int currentTime()
 
 int main (int argc, char**argv)
 {
+	system("clear");
+	initscr();
+	noecho();
+	nl();
+
 	int done = 0;
 	int cycles = 0;
 	State8080* state = Init8080();
@@ -1491,5 +1498,6 @@ int main (int argc, char**argv)
 			DumpScreenMem(state);
 		}
 	}
+	endwin();
 	return 0;
 }
