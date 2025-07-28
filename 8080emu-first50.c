@@ -766,7 +766,12 @@ int Emulate8080Op(State8080* state)
 			state->pc = state->memory[state->sp] | (state->memory[state->sp+1] << 8);
 			state->sp += 2;
 			break;
-		case 0xca: UnimplementedInstruction(state); break;
+		case 0xca:						//JZ
+			if(state->cc.z == 1)
+			{
+				state->pc = (opcode[2] << 8) | opcode[1];
+			}
+			break;
 		case 0xcb: UnimplementedInstruction(state); break;
 		case 0xcc: UnimplementedInstruction(state); break;
 		case 0xcd: 						//CALL adr
