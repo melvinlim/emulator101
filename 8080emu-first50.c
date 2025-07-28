@@ -409,7 +409,7 @@ int Emulate8080Op(State8080* state)
 			state->pc++;
 			break;
 		case 0x07: UnimplementedInstruction(state); break;
-		case 0x08: UnimplementedInstruction(state); break;
+		case 0x08: break;				//NOP
 		case 0x09: 							//DAD B
 			{
 			uint32_t hl = (state->h << 8) | state->l;
@@ -448,7 +448,7 @@ int Emulate8080Op(State8080* state)
 				state->cc.cy = (1 == (x&1));
 			}
 			break;
-		case 0x10: UnimplementedInstruction(state); break;
+		case 0x10: break;				//NOP
 		case 0x11: 							//LXI	D,word
 			state->e = opcode[1];
 			state->d = opcode[2];
@@ -464,7 +464,7 @@ int Emulate8080Op(State8080* state)
 		case 0x15: UnimplementedInstruction(state); break;
 		case 0x16: UnimplementedInstruction(state); break;
 		case 0x17: UnimplementedInstruction(state); break;
-		case 0x18: UnimplementedInstruction(state); break;
+		case 0x18: break;				//NOP
 		case 0x19: 							//DAD    D
 			{
 			uint32_t hl = (state->h << 8) | state->l;
@@ -486,7 +486,7 @@ int Emulate8080Op(State8080* state)
 		case 0x1d: UnimplementedInstruction(state); break;
 		case 0x1e: UnimplementedInstruction(state); break;
 		case 0x1f: UnimplementedInstruction(state); break;
-		case 0x20: UnimplementedInstruction(state); break;
+		case 0x20: break;				//NOP
 		case 0x21: 							//LXI	H,word
 			state->l = opcode[1];
 			state->h = opcode[2];
@@ -505,7 +505,7 @@ int Emulate8080Op(State8080* state)
 			state->pc++;
 			break;
 		case 0x27: UnimplementedInstruction(state); break;
-		case 0x28: UnimplementedInstruction(state); break;
+		case 0x28: break;					//NOP
 		case 0x29: 								//DAD    H
 			{
 			uint32_t hl = (state->h << 8) | state->l;
@@ -521,7 +521,7 @@ int Emulate8080Op(State8080* state)
 		case 0x2d: UnimplementedInstruction(state); break;
 		case 0x2e: UnimplementedInstruction(state); break;
 		case 0x2f: UnimplementedInstruction(state); break;
-		case 0x30: UnimplementedInstruction(state); break;
+		case 0x30: break;				//NOP
 		case 0x31: 							//LXI	SP,word
 			state->sp = (opcode[2]<<8) | opcode[1];
 			state->pc += 2;
@@ -553,7 +553,7 @@ int Emulate8080Op(State8080* state)
 			}
 			break;
 		case 0x37: UnimplementedInstruction(state); break;
-		case 0x38: UnimplementedInstruction(state); break;
+		case 0x38: break;				//NOP
 		case 0x39: UnimplementedInstruction(state); break;
 		case 0x3a: 							//LDA    (word)
 			{
