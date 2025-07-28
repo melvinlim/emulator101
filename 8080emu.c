@@ -78,6 +78,8 @@ void MachineOUT(State8080* state, uint8_t port)
 			break;
 		case 6:
 			printw("requested reset.  ignoring.\n");
+			//printw("requested reset.  set pc to 0.  (reset interrupt)\n");
+			//state->pc = 0;
 			break;
 		default:
 			printf("OUT %d, %x\n", port, a);
@@ -1083,7 +1085,7 @@ int Emulate8080Op(State8080* state)
 		case 0xd3:                      //OUT d8
 			uint8_t port = opcode[1];
 			MachineOUT(state, port);
-			state->pc++;
+			state->pc++;		//state->pc is also incremented at the beginning of the Emulate8080 function.
 			break;
 		case 0xd4:						//CNC adr
 			if (state->cc.cy == 0)
@@ -1136,7 +1138,7 @@ int Emulate8080Op(State8080* state)
 			{
 				uint8_t port = opcode[1];
 				state->a = MachineIN(state, port);
-				state->pc++;
+				state->pc++;		//state->pc is also incremented at the beginning of the Emulate8080 function.
 			}
 			break;
 		case 0xdc: 					//CC adr
@@ -1440,6 +1442,9 @@ void ReadFileIntoMemoryAt(State8080* state, char* filename, uint32_t offset)
 
 void DrawScreenMem(State8080* state, int dy)
 {
+#if PRINTOPS
+	return;
+#endif
 	int offset = 0x2400 + dy;
 	//offset += 80 * 0x20;
 	//offset += 80 * 0x20;
@@ -1489,9 +1494,12 @@ int vertical = 0;
 int main (int argc, char**argv)
 {
 	system("clear");
+#if PRINTOPS
+#else
 	initscr();
 	noecho();
 	nl();
+#endif
 
 	timeout(0);
 
@@ -1509,12 +1517,14 @@ int main (int argc, char**argv)
 	int dtime = 0;
 
 	char ch = 0;
+	bool coindown = false;
 	
 	while (!done)
 	{
 		ch = getch();
 		if(ch == 'v')	vertical = (vertical + 1) % 3;
 		if(ch == 'q')	done = 1;
+		if(ch == 'c')	coindown = !coindown;
 		cycles = 0;
 		timems = currentTime();
 		while(cycles < (2000000 / 30))	//8080 ran at 2MHz.  2 million cycles per second.  video interrupts are every 1/30 of a second.
