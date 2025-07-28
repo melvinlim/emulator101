@@ -420,7 +420,12 @@ int Emulate8080Op(State8080* state)
 			state->cc.cy = ((res & 0xffff0000) > 0);
 			}
 			break;
-		case 0x0a: UnimplementedInstruction(state); break;
+		case 0x0a:							//LDAX B
+			{
+			uint16_t offset=(state->b<<8) | state->c;
+			state->a = state->memory[offset];
+			}
+			break;
 		case 0x0b: UnimplementedInstruction(state); break;
 		case 0x0c: UnimplementedInstruction(state); break;
 		case 0x0d: 							//DCR    C
