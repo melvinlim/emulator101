@@ -535,7 +535,7 @@ int Emulate8080Op(State8080* state)
 			break;
 		case 0x33: UnimplementedInstruction(state); break;
 		case 0x34: UnimplementedInstruction(state); break;
-		case 0x35:
+		case 0x35:							//DCR M
 			uint16_t memloc = (state->h << 8) | (state->l);
 			uint8_t* mem = &state->memory[memloc];
 			uint8_t res = *mem - 1;
@@ -664,10 +664,11 @@ int Emulate8080Op(State8080* state)
 		case 0x82:							//ADD D
 			{
 			uint8_t res = state->a + state->d;
-			state->cc.z = 0;
-			state->cc.s = 1;
-			state->cc.p = 1;
+			state->cc.z = ((res & 0xff) == 0);
+			state->cc.s = (0x80 == (res & 0x80));
+			state->cc.p = parity((res&0xff), 8);
 			state->cc.cy = ((res & 0xffff00) != 0);
+			state->cc.ac = (((state->a&0xf)+(state->d&0xf)) > 0xf);
 			state->a = res;
 			}
 			break;
