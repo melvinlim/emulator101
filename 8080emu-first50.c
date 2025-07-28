@@ -511,7 +511,15 @@ int Emulate8080Op(State8080* state)
 			break;
 		case 0x33: UnimplementedInstruction(state); break;
 		case 0x34: UnimplementedInstruction(state); break;
-		case 0x35: UnimplementedInstruction(state); break;
+		case 0x35:
+			uint16_t memloc = (state->h << 8) | (state->l);
+			uint8_t* mem = &state->memory[memloc];
+			uint8_t res = *mem - 1;
+			state->cc.z = (res == 0);
+			state->cc.s = (0x80 == (res & 0x80));
+			state->cc.p = parity(res, 8);
+			*mem = res;
+			break;
 		case 0x36: 							//MVI	M,byte
 			{					
 			//AC set if lower nibble of h was zero prior to dec
