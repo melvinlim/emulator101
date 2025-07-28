@@ -65,6 +65,26 @@ unsigned char cycles8080[] = {
 	11, 10, 10, 4, 17, 11, 7, 11, 11, 5, 10, 4, 17, 17, 7, 11, 
 };
 
+uint8_t MachineIN(State8080* state, uint8_t port)
+{
+	uint8_t a;
+	switch(port)
+	{
+		case 2:
+			a=0;
+			//UnimplementedInstruction(state);
+			break;
+		case 3:
+			printf("unimplemented instruction\n");
+			exit(1);
+			//UnimplementedInstruction(state);
+//			uint16_t v = (shift1<<8) | shift0;
+//			a = ((v >> (8-shift_offset)) & 0xff);
+			break;
+	}
+	return a;
+}
+
 static int Disassemble8080Op(unsigned char *codebuffer, int pc)
 {
 	unsigned char *code = &codebuffer[pc];
@@ -1087,6 +1107,8 @@ int Emulate8080Op(State8080* state)
 				state->pc += 2;
 			break;		
 		case 0xdb: 					//IN d8
+			uint8_t port = opcode[1];
+			state->a = MachineIN(state, port);
 			state->pc++;
 			break;
 		case 0xdc: 					//CC adr
@@ -1416,7 +1438,7 @@ int main (int argc, char**argv)
 	ReadFileIntoMemoryAt(state, "invaders.f", 0x1000);
 	ReadFileIntoMemoryAt(state, "invaders.e", 0x1800);
 
-	int nextInterrupt = 2;
+	int nextInterrupt = 1;
 	
 	while (!done)
 	{
@@ -1433,6 +1455,7 @@ int main (int argc, char**argv)
 				DumpScreenMem(state);
 			}
 		}
+		usleep(1./2000000.*(float)cycles);
 	}
 	return 0;
 }

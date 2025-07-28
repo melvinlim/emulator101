@@ -31,6 +31,7 @@
 #include <stdint.h>
 #include <sys/time.h>
 #include <time.h>
+#include <unistd.h>
 
 //#define dbgprint(...) printf(__VA_ARGS__)
 #define dbgprint(...) fprintf(stderr, __VA_ARGS__);
