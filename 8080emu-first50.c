@@ -656,7 +656,16 @@ int Emulate8080Op(State8080* state)
 		case 0x7f: UnimplementedInstruction(state); break;
 		case 0x80: UnimplementedInstruction(state); break;
 		case 0x81: UnimplementedInstruction(state); break;
-		case 0x82: UnimplementedInstruction(state); break;
+		case 0x82:							//ADD D
+			{
+			uint8_t res = state->a + state->d;
+			state->cc.z = 0;
+			state->cc.s = 1;
+			state->cc.p = 1;
+			state->cc.cy = ((res & 0xffff00) != 0);
+			state->a = res;
+			}
+			break;
 		case 0x83: UnimplementedInstruction(state); break;
 		case 0x84: UnimplementedInstruction(state); break;
 		case 0x85: UnimplementedInstruction(state); break;
