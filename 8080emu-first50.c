@@ -1007,6 +1007,8 @@ int main (int argc, char**argv)
 	ReadFileIntoMemoryAt(state, "invaders.g", 0x800);
 	ReadFileIntoMemoryAt(state, "invaders.f", 0x1000);
 	ReadFileIntoMemoryAt(state, "invaders.e", 0x1800);
+
+	int nextInterrupt = 2;
 	
 	while (done == 0)
 	{
@@ -1017,7 +1019,9 @@ int main (int argc, char**argv)
 			//only do an interrupt if they are enabled
 			if (state->int_enable)
 			{
-				GenerateInterrupt(state, 2);    //interrupt 2
+				GenerateInterrupt(state, nextInterrupt);
+				if(nextInterrupt == 2)	nextInterrupt = 1;
+				else	nextInterrupt = 2;
 				lastInterrupt = time(0);
 			}
 		}
