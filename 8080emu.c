@@ -1419,7 +1419,26 @@ void DumpScreenMem(State8080* state)
 	{
 		for(int j=0; j<0x20; j++)
 		{
-			printf("%02x", buffer[k++]);
+			
+			for(int l=0; l<8; l++)
+			{
+				uint8_t tmpval = buffer[k] & (0x80 >> l);
+				if(tmpval > 0){
+					printf(".");
+				}else{
+					printf(" ");
+				}
+			}
+			k++;
+			
+			//printf("%02x", buffer[k++]);
+			/*
+			if(buffer[k++] == 0){
+				printf("        ");
+			}else{
+				printf("........");
+			}
+			*/
 		}
 		printf("\n");
 	}
