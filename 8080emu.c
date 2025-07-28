@@ -1415,6 +1415,7 @@ void DumpScreenMem(State8080* state)
 	int offset = 0x2400;
 	uint8_t *buffer = &state->memory[offset];
 	int k = 0;
+	system("clear");
 	for(int i=0; i<0x4000; i += 0x20)
 	{
 		for(int j=0; j<0x20; j++)
@@ -1444,11 +1445,16 @@ void DumpScreenMem(State8080* state)
 	}
 }
 
+int currentTime()
+{
+	struct timeval tv;
+	gettimeofday(&tv, 0);
+	return tv.tv_sec * 1000000 + tv.tv_usec;
+}
+
 int main (int argc, char**argv)
 {
 	int done = 0;
-	int vblankcycles = 0;
-	int lastInterrupt = 0;
 	int cycles = 0;
 	State8080* state = Init8080();
 	
@@ -1458,28 +1464,32 @@ int main (int argc, char**argv)
 	ReadFileIntoMemoryAt(state, "invaders.e", 0x1800);
 
 	int nextInterrupt = 1;
+	int timems = 0;
+	int dtime = 0;
 	
 	while (!done)
 	{
 		cycles = 0;
+		timems = currentTime();
 		while(cycles < (2000000 / 30))	//8080 ran at 2MHz.  2 million cycles per second.  video interrupts are every 1/30 of a second.
 		{
 			cycles += Emulate8080Op(state);
 		}
-
-		//usleep(1./2000000.*(float)cycles);
-//		if (time(0) - lastInterrupt > 1.0/60.0)  //1/60 second has elapsed
-//		{
-			//only do an interrupt if they are enabled
-			if (state->int_enable)
-			{
-				GenerateInterrupt(state, nextInterrupt);
-				if(nextInterrupt = 2)	nextInterrupt = 1;
-				else nextInterrupt = 2;
-				//lastInterrupt = time(0);
-				DumpScreenMem(state);
-			}
-//		}
+		
+		dtime = currentTime() - timems;
+		if(dtime < 1000000/30)
+		{
+			usleep( 1000000/30 - dtime );
+			//printf("sleeping %d us.\n", ( 1000000/30 - dtime ));
+		}
+		//only do an interrupt if they are enabled
+		if (state->int_enable)
+		{
+			GenerateInterrupt(state, nextInterrupt);
+			if(nextInterrupt = 2)	nextInterrupt = 1;
+			else nextInterrupt = 2;
+			DumpScreenMem(state);
+		}
 	}
 	return 0;
 }
