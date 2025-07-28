@@ -65,6 +65,28 @@ unsigned char cycles8080[] = {
 	11, 10, 10, 4, 17, 11, 7, 11, 11, 5, 10, 4, 17, 17, 7, 11, 
 };
 
+void MachineOUT(State8080* state, uint8_t port)
+{
+	uint8_t a = state->a;
+	switch(port)
+	{
+		case 3:
+			printw("requested sound from sound port 3.  ignoring.\n");
+			break;
+		case 5:
+			printw("requested sound from sound port 5.  ignoring.\n");
+			break;
+		case 6:
+			printw("requested reset.  ignoring.\n");
+			break;
+		default:
+			printf("OUT %d, %x\n", port, a);
+			endwin();
+			exit(1);
+			break;
+	}
+}
+
 uint8_t MachineIN(State8080* state, uint8_t port)
 {
 	uint8_t a;
@@ -72,15 +94,17 @@ uint8_t MachineIN(State8080* state, uint8_t port)
 	{
 		case 2:
 			a=0;
-			//UnimplementedInstruction(state);
 			break;
 		case 3:
 			printf("unimplemented instruction\n");
 			exit(1);
-			//UnimplementedInstruction(state);
 //			uint16_t v = (shift1<<8) | shift0;
 //			a = ((v >> (8-shift_offset)) & 0xff);
 			break;
+		default:
+			printf("unimplemented port %d\n", port);
+			endwin();
+			exit(1);
 	}
 	return a;
 }
@@ -1057,6 +1081,8 @@ int Emulate8080Op(State8080* state)
 				state->pc += 2;
 			break;
 		case 0xd3:                      //OUT d8
+			uint8_t port = opcode[1];
+			MachineOUT(state, port);
 			state->pc++;
 			break;
 		case 0xd4:						//CNC adr
@@ -1107,9 +1133,11 @@ int Emulate8080Op(State8080* state)
 				state->pc += 2;
 			break;		
 		case 0xdb: 					//IN d8
-			uint8_t port = opcode[1];
-			state->a = MachineIN(state, port);
-			state->pc++;
+			{
+				uint8_t port = opcode[1];
+				state->a = MachineIN(state, port);
+				state->pc++;
+			}
 			break;
 		case 0xdc: 					//CC adr
 			if (state->cc.cy != 0)
