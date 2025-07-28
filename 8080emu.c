@@ -1410,9 +1410,11 @@ void ReadFileIntoMemoryAt(State8080* state, char* filename, uint32_t offset)
 	fclose(f);
 }
 
-void DumpScreenMem(State8080* state)
+void DrawScreenMem(State8080* state, int dy)
 {
-	int offset = 0x2400;
+	int offset = 0x2400 + dy;
+	//offset += 80 * 0x20;
+	//offset += 80 * 0x20;
 	uint8_t *buffer = &state->memory[offset];
 	int k = 0;
 	//system("clear");
@@ -1454,12 +1456,16 @@ int currentTime()
 	return tv.tv_sec * 1000000 + tv.tv_usec;
 }
 
+int vertical = 0;
+
 int main (int argc, char**argv)
 {
 	system("clear");
 	initscr();
 	noecho();
 	nl();
+
+	timeout(0);
 
 	int done = 0;
 	int cycles = 0;
@@ -1473,9 +1479,14 @@ int main (int argc, char**argv)
 	int nextInterrupt = 1;
 	int timems = 0;
 	int dtime = 0;
+
+	char ch = 0;
 	
 	while (!done)
 	{
+		ch = getch();
+		if(ch == 'v')	vertical = (vertical + 1) % 3;
+		if(ch == 'q')	done = 1;
 		cycles = 0;
 		timems = currentTime();
 		while(cycles < (2000000 / 30))	//8080 ran at 2MHz.  2 million cycles per second.  video interrupts are every 1/30 of a second.
@@ -1495,7 +1506,10 @@ int main (int argc, char**argv)
 			GenerateInterrupt(state, nextInterrupt);
 			if(nextInterrupt = 2)	nextInterrupt = 1;
 			else nextInterrupt = 2;
-			DumpScreenMem(state);
+			if(!vertical)
+				DrawScreenMem(state, 0);
+			else
+				DrawScreenMem(state, 0x20 * 80 * vertical);
 		}
 	}
 	endwin();
