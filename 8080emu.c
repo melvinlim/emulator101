@@ -1531,6 +1531,11 @@ int main (int argc, char**argv)
 		{
 			cycles += Emulate8080Op(state);
 		}
+
+		do
+		{
+			cycles += Emulate8080Op(state);
+		}while(!state->int_enable);
 		
 		dtime = currentTime() - timems;
 		if(dtime < 1000000/30)
@@ -1538,17 +1543,16 @@ int main (int argc, char**argv)
 			usleep( 1000000/30 - dtime );
 			//printf("sleeping %d us.\n", ( 1000000/30 - dtime ));
 		}
-		//only do an interrupt if they are enabled
 		if (state->int_enable)
 		{
 			GenerateInterrupt(state, nextInterrupt);
 			if(nextInterrupt = 2)	nextInterrupt = 1;
 			else nextInterrupt = 2;
-			if(!vertical)
-				DrawScreenMem(state, 0);
-			else
-				DrawScreenMem(state, 0x20 * 80 * vertical);
 		}
+		if(!vertical)
+			DrawScreenMem(state, 0);
+		else
+			DrawScreenMem(state, 0x20 * 80 * vertical);
 	}
 	endwin();
 	return 0;
