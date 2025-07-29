@@ -33,6 +33,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <ncurses.h>
+#include "shared_vars.h"
 
 //#define dbgprint(...) printf(__VA_ARGS__)
 #define dbgprint(...) fprintf(stderr, __VA_ARGS__);
@@ -75,3 +76,8 @@ typedef struct State8080 {
 
 int Emulate8080Op(State8080* state);
 void GenerateInterrupt(State8080* state, int interrupt_num);
+State8080* Init8080(void);
+
+void ReadFileIntoMemoryAt(State8080* state, char* filename, uint32_t offset);
+void DrawScreenMem(State8080* state, int dy);
+int currentTime();

@@ -5,3 +5,6 @@ xcuserdata*
 *.bak
 a.out
 wolf
+*.o
+spaceinvaders
+invaders
