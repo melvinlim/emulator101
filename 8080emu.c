@@ -65,6 +65,8 @@ unsigned char cycles8080[] = {
 	11, 10, 10, 4, 17, 11, 7, 11, 11, 5, 10, 4, 17, 17, 7, 11, 
 };
 
+static uint8_t inputport1 = 0x8;
+
 void MachineOUT(State8080* state, uint8_t port)
 {
 	uint8_t a = state->a;
@@ -94,6 +96,9 @@ uint8_t MachineIN(State8080* state, uint8_t port)
 	uint8_t a;
 	switch(port)
 	{
+		case 1:
+			a=inputport1;
+			break;
 		case 2:
 			a=0;
 			break;
@@ -1520,6 +1525,8 @@ int main (int argc, char**argv)
 
 	char ch = 0;
 	bool coindown = false;
+	bool p1button = false;
+	bool p2button = false;
 	
 	while (!done)
 	{
@@ -1527,6 +1534,25 @@ int main (int argc, char**argv)
 		if(ch == 'v')	vertical = (vertical + 1) % 3;
 		if(ch == 'q')	done = 1;
 		if(ch == 'c')	coindown = !coindown;
+		if(ch == '1')	p1button = !p1button;
+		if(ch == '2')	p2button = !p2button;
+
+		if(coindown)
+		{
+			inputport1 ^= 1;
+			coindown = false;
+		}
+		if(p1button)
+		{
+			inputport1 ^= 4;
+			p1button = false;
+		}
+		if(p2button)
+		{
+			inputport1 ^= 2;
+			p2button = false;
+		}
+
 		cycles = 0;
 		timems = currentTime();
 		while(cycles < (2000000 / 30))	//8080 ran at 2MHz.  2 million cycles per second.  video interrupts are every 1/30 of a second.
