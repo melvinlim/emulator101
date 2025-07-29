@@ -72,8 +72,15 @@ void MachineOUT(State8080* state, uint8_t port)
 	uint8_t a = state->a;
 	switch(port)
 	{
+		case 2:
+			state->shift_offset = a & 0x7;
+			break;
 		case 3:
 			printw("requested sound from sound port 3.  ignoring.\n");
+			break;
+		case 4:
+			state->shift0 = state->shift1;
+			state->shift1 = a;
 			break;
 		case 5:
 			printw("requested sound from sound port 5.  ignoring.\n");
@@ -103,10 +110,8 @@ uint8_t MachineIN(State8080* state, uint8_t port)
 			a=0;
 			break;
 		case 3:
-			printf("unimplemented instruction\n");
-			exit(1);
-//			uint16_t v = (shift1<<8) | shift0;
-//			a = ((v >> (8-shift_offset)) & 0xff);
+			uint16_t v = (state->shift1<<8) | state->shift0;
+			a = ((v >> (8-state->shift_offset)) & 0xff);
 			break;
 		default:
 			printf("unimplemented port %d\n", port);

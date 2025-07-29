@@ -65,6 +65,9 @@ typedef struct State8080 {
 	uint8_t		*memory;
 	struct ConditionCodes		cc;
 	uint8_t		int_enable;
+	uint8_t		shift_offset;
+	uint8_t		shift0;
+	uint8_t		shift1;
 
 } State8080;
 
