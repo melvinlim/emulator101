@@ -479,6 +479,8 @@ int Emulate8080Op(State8080* state)
     Disassemble8080Op(state->memory, state->pc);
 #endif
 
+	//if((state->pc > 0x10) && (state->pc <= 0x22))
+	//	getchar();
 	state->pc+=1;    
     
 	switch (*opcode)
@@ -1407,13 +1409,13 @@ int Emulate8080Op(State8080* state)
 void GenerateInterrupt(State8080* state, int interrupt_num)
 {
 	//perform "PUSH PC"
-    Push(state, (state->pc & 0xFF00) >> 8, (state->pc & 0xff));
+	Push(state, (state->pc & 0xFF00) >> 8, (state->pc & 0xff));
 	
 	//Set the PC to the low memory vector
 	state->pc = 8 * interrupt_num;
     
-    //"DI"
-    state->int_enable = 0;
+	//"DI"
+	state->int_enable = 0;
 }
 
 State8080* Init8080(void)
@@ -1546,7 +1548,7 @@ int main (int argc, char**argv)
 		if (state->int_enable)
 		{
 			GenerateInterrupt(state, nextInterrupt);
-			if(nextInterrupt = 2)	nextInterrupt = 1;
+			if(nextInterrupt == 2)	nextInterrupt = 1;
 			else nextInterrupt = 2;
 		}
 		if(!vertical)
