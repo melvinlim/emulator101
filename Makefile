@@ -1,8 +1,3 @@
-#8080:
-#	gcc -g spaceinvaders.c -lncurses
-
-#seawolf:
-#	gcc -g seawolf.c -lncurses -o wolf
 
 CC = gcc
 CFLAGS = -Wall -g
@@ -10,19 +5,24 @@ CFLAGS = -Wall -g
 LIBS = -lncurses
 
 # Define the executable name
-TARGET = invaders
+TARGET1 = invaders
+TARGET2 = wolf
 
 # Define the source files
-SRCS = 8080emu.c spaceinvaders.c
+SRCS1 = 8080emu.c spaceinvaders.c
+SRCS2 = 8080emu.c seawolf.c
 
 # Define the object files (derived from source files)
-OBJS = $(SRCS:.c=.o)
+OBJS1 = $(SRCS1:.c=.o)
+OBJS2 = $(SRCS2:.c=.o)
 
 # Default target: builds the executable
-all: $(TARGET)
+all: $(TARGET1) $(TARGET2)
 
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LIBS)
+$(TARGET1): $(OBJS1)
+	$(CC) $(CFLAGS) -o $@ $(OBJS1) $(LIBS)
+$(TARGET2): $(OBJS2)
+	$(CC) $(CFLAGS) -o $@ $(OBJS2) $(LIBS)
 
 # Rule for compiling .c files into .o files
 %.o: %.c
@@ -30,4 +30,4 @@ $(TARGET): $(OBJS)
 
 # Clean target: removes generated files
 clean:
-	rm -f $(TARGET) $(OBJS)
+	rm -f $(TARGET1) $(TARGET2) $(OBJS1) $(OBJS2)

@@ -71,6 +71,10 @@ void MachineOUT(State8080* state, uint8_t port)
 	uint8_t a = state->a;
 	switch(port)
 	{
+		case 1:
+			printw("requested write to port 1 but no idea what that is.  ignoring.\n");
+			break;
+
 		case 2:
 			state->shift_offset = a & 0x7;
 			break;
