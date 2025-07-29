@@ -1471,7 +1471,8 @@ void DrawScreenMem(State8080* state, int dy)
 			
 			for(int l=0; l<8; l++)
 			{
-				uint8_t tmpval = buffer[k] & (0x80 >> l);
+				//uint8_t tmpval = buffer[k] & (0x80 >> l);
+				uint8_t tmpval = buffer[k] & (1 << l);
 				if(tmpval > 0){
 					printw(".");
 				}else{
